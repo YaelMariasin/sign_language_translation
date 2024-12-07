@@ -1,7 +1,8 @@
 import os
 from moviepy import *
 from moviepy.editor import *
-
+from PIL import Image
+import numpy as np
 
 def crop_video(video_name, x, y, width, height):
     try:
@@ -33,6 +34,71 @@ def crop_video(video_name, x, y, width, height):
         print(f"An error occurred: {e}")
 
 
+def corp_simulation(video_path, x, y, width, height, output_image_path):
+    try:
+        # Load the video
+        video = VideoFileClip(video_path)
+
+        # Calculate 1/3 of the video duration
+        third_duration = video.duration / 3
+
+        # Extract a frame at 1/3 of the duration
+        frame = video.get_frame(third_duration)
+
+        # Create a mask: blacken everything except the specified rectangle
+        masked_frame = np.zeros_like(frame)  # Blacken entire frame
+        masked_frame[y:y + height, x:x + width, :] = frame[y:y + height, x:x + width, :]  # Add the visible rectangle
+
+        # Save the masked frame as an image
+        image = Image.fromarray(masked_frame)
+        image.save(output_image_path)
+
+        print(f"Masked image saved to {output_image_path}")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+def extract_frames(input_directory):
+    try:
+        # Create output directory if it doesn't exist
+        base_directory = os.path.dirname(input_directory)
+        output_directory = os.path.join(base_directory, "sim_frames")
+        os.makedirs(output_directory, exist_ok=True)
+
+        # Loop through all files in the directory
+        for filename in os.listdir(input_directory):
+            if filename.endswith(".mp4"):  # Check if it's an MP4 file
+                video_path = os.path.join(input_directory, filename)
+                output_image_path = os.path.join(output_directory, f"{os.path.splitext(filename)[0]}_frame.png")
+
+                print(f"Processing: {filename}")
+
+                # Load the video
+                video = VideoFileClip(video_path)
+
+                # Calculate 1/3 of the video duration
+                third_duration = video.duration / 3
+
+                # Extract a frame at 1/3 of the duration
+                frame = video.get_frame(third_duration)
+
+                # Save the frame as an image
+                image = Image.fromarray(frame)
+                image.save(output_image_path)
+
+                print(f"Saved frame to: {output_image_path}")
+
+        print(f"All videos processed. Frames saved in {output_directory}")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+#
+# input_directory = "/Users/raananpevzner/PycharmProjects/sign_language_translation/original_videos"  # Replace with your directory path
+# extract_frames(input_directory)
+
+
 if __name__ == "__main__":
     # Define folder paths
     base_folder = os.path.dirname(__file__)
@@ -42,6 +108,7 @@ if __name__ == "__main__":
     video_name = "video1.mp4"
     input_path = os.path.join(input_folder, video_name)
 
+    # print(input_path)
     try:
         # Load the video to get its size
         video_clip = VideoFileClip(input_path)
@@ -54,10 +121,11 @@ if __name__ == "__main__":
         exit()
 
     # Get cropping parameters from user (or set default values)
-    x = 50
-    y = 50
+    x = 10
+    y = 30
     width_crop = 200
-    height_crop = 200
+    height_crop = 300
 
     # Crop the video
-    crop_video(video_name, x, y, width_crop, height_crop)
+    crop_video('video1.mp4',308,200,755,605)
+    # corp_simulation(input_path, 308,200,755,605,"sim.png")
