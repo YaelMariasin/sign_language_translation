@@ -201,10 +201,10 @@ def save_visualization_as_video(video_name):
 
 
 if __name__ == "__main__":
-    video_name = "word"  # Replace with the name of your video (without extension)
+    video_name = "sister"  # Replace with the name of your video (without extension)
 
     # # Extract motion data from video
-    # extract_motion_data(video_name)
+    extract_motion_data(video_name)
     #
     # # Visualize motion data
     visualize_motion_data(video_name)
