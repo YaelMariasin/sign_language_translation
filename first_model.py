@@ -51,10 +51,22 @@ features, labels = load_data_from_db()  # features: (num_videos, 15000, 3)
 label_encoder = LabelEncoder()
 encoded_labels = label_encoder.fit_transform(labels)
 
+# # Train-test split
+# X_train, X_test, y_train, y_test = train_test_split(
+#     features, encoded_labels, test_size=0.2, random_state=42, stratify=encoded_labels
+# )
+from collections import Counter
+
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(
     features, encoded_labels, test_size=0.2, random_state=42, stratify=encoded_labels
 )
+
+# Verify distribution of labels
+train_label_distribution = Counter(y_train)
+test_label_distribution = Counter(y_test)
+print("Train Label Distribution:", train_label_distribution)
+print("Test Label Distribution:", test_label_distribution)
 
 # Compute class weights for imbalanced data
 class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
