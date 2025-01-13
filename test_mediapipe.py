@@ -11,14 +11,14 @@ json_folder = "motion_data/"
 output_folder = "generated_videos/"
 
 
-def extract_motion_data(video_name):
+def extract_motion_data(video_name, folder_name=video_folder):
     # Initialize MediaPipe pose and hands modules
     mp_pose = mp.solutions.pose
     mp_hands = mp.solutions.hands
     mp_drawing = mp.solutions.drawing_utils
 
     # Load video
-    video_path = "sign_language_videos/" + video_name + ".mp4"
+    video_path = folder_name + video_name + ".mp4"
     cap = cv2.VideoCapture(video_path)
 
     # Output file for motion data
@@ -80,13 +80,15 @@ def extract_motion_data(video_name):
     # Trim dead time using the modified detect_motion_and_trim
     trimmed_data = detect_motion_and_trim(output_data)
 
+    return trimmed_data
+
+def motion_data_to_json(frames_data, video_name):
     # Save motion data to a file
     json_path = "motion_data/" + video_name + ".json"
     with open(json_path, "w") as f:
-        json.dump(trimmed_data, f)
+        json.dump(frames_data, f)
 
     print(f"Motion data saved to {json_path}")
-
 
 def visualize_motion_data(video_name):
     """Visualize motion data from a JSON file."""
@@ -204,33 +206,33 @@ def save_visualization_as_video(video_name):
     out.release()
     print(f"Recreated video saved to {output_path}")
 
-def json_to_numpy(json_file_path):
-    """
-    Load JSON data from a file and convert it to a NumPy array.
+# def json_to_numpy(json_file_path):
+#     """
+#     Load JSON data from a file and convert it to a NumPy array.
     
-    Args:
-        json_file_path (str): The path to the JSON file.
+#     Args:
+#         json_file_path (str): The path to the JSON file.
         
-    Returns:
-        np.ndarray: A NumPy array representing the motion data, or None if an error occurs.
-    """
-    try:
-        # Step 1: Load the JSON data from the file
-        with open(json_file_path, 'r', encoding='utf-8') as f:
-            frames_data = json.load(f)
+#     Returns:
+#         np.ndarray: A NumPy array representing the motion data, or None if an error occurs.
+#     """
+#     try:
+#         # Step 1: Load the JSON data from the file
+#         with open(json_file_path, 'r', encoding='utf-8') as f:
+#             frames_data = json.load(f)
         
-        if not frames_data:
-            raise ValueError("The JSON file is empty or invalid.")
+#         if not frames_data:
+#             raise ValueError("The JSON file is empty or invalid.")
 
-        # Step 2: Convert JSON data to a feature vector using create_feature_vector
-        feature_vector = create_feature_vector(frames_data)
+#         # Step 2: Convert JSON data to a feature vector using create_feature_vector
+#         feature_vector = create_feature_vector(frames_data)
 
-        print(f"Successfully converted JSON file '{json_file_path}' to NumPy array.")
-        return feature_vector
+#         print(f"Successfully converted JSON file '{json_file_path}' to NumPy array.")
+#         return feature_vector
 
-    except Exception as e:
-        print(f"Failed to convert JSON file '{json_file_path}' to NumPy array: {e}")
-        return None
+#     except Exception as e:
+#         print(f"Failed to convert JSON file '{json_file_path}' to NumPy array: {e}")
+#         return None
 
 
 
