@@ -1,8 +1,9 @@
 import cv2
 import mediapipe as mp
 import json
-import numpy
+import numpy as np
 from trim_sign_language_dead_time import detect_motion_and_trim
+from conver_json_to_vector import create_feature_vector
 
 # Global configuration
 video_folder = "sign_language_videos/"
@@ -203,9 +204,38 @@ def save_visualization_as_video(video_name):
     out.release()
     print(f"Recreated video saved to {output_path}")
 
+def json_to_numpy(json_file_path):
+    """
+    Load JSON data from a file and convert it to a NumPy array.
+    
+    Args:
+        json_file_path (str): The path to the JSON file.
+        
+    Returns:
+        np.ndarray: A NumPy array representing the motion data, or None if an error occurs.
+    """
+    try:
+        # Step 1: Load the JSON data from the file
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            frames_data = json.load(f)
+        
+        if not frames_data:
+            raise ValueError("The JSON file is empty or invalid.")
+
+        # Step 2: Convert JSON data to a feature vector using create_feature_vector
+        feature_vector = create_feature_vector(frames_data)
+
+        print(f"Successfully converted JSON file '{json_file_path}' to NumPy array.")
+        return feature_vector
+
+    except Exception as e:
+        print(f"Failed to convert JSON file '{json_file_path}' to NumPy array: {e}")
+        return None
+
+
 
 if __name__ == "__main__":
-    video_name = "yanoos"  # Replace with the name of your video (without extension)
+    video_name = "brother"  # Replace with the name of your video (without extension)
 
     # # Extract motion data from video
     extract_motion_data(video_name)
