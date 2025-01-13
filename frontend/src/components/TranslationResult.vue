@@ -21,10 +21,6 @@
   .translation-result {
     max-width: 600px;
     margin: 20px auto;
-    padding: 20px;
-    /* background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   }
 
   @media (max-width: 600px) {

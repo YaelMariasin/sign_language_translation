@@ -481,7 +481,8 @@ def fresh_generate_variations(file_name):
     # save_json(speed_modify, f"{file_name}_speed_modify.json")
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 #     input_file_name = "cell_phone"  # Replace with the desired file name (without .json extension)
 #     fresh_generate_variations(input_file_name)
 #     visualize_all_files(input_file_name)
+    visualize_motion_data('trimmed_word.json')

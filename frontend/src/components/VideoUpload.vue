@@ -47,15 +47,6 @@
         } catch (error) {
           console.error('Error uploading video:', error);
         }
-
-
-        // Simulate a translation process instead of calling an API
-
-        // ------MOCK------
-        // setTimeout(() => {
-        //     const simulatedTranslationResult = "Simulated translated text of the sign language video.";
-        //     this.$emit('video-uploaded', simulatedTranslationResult);  // Pass the result to App.vue
-        // }, 10);  // Simulate a 2-second delay for the translation
          }
     }
   };

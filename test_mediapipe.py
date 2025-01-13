@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import json
 import numpy
+from trim_sign_language_dead_time import detect_motion_and_trim
 
 # Global configuration
 video_folder = "sign_language_videos/"
@@ -74,11 +75,14 @@ def extract_motion_data(video_name):
     # Release resources
     cap.release()
     cv2.destroyAllWindows()
+    
+    # Trim dead time using the modified detect_motion_and_trim
+    trimmed_data = detect_motion_and_trim(output_data)
 
     # Save motion data to a file
     json_path = "motion_data/" + video_name + ".json"
     with open(json_path, "w") as f:
-        json.dump(output_data, f)
+        json.dump(trimmed_data, f)
 
     print(f"Motion data saved to {json_path}")
 
@@ -201,7 +205,7 @@ def save_visualization_as_video(video_name):
 
 
 if __name__ == "__main__":
-    video_name = "sister"  # Replace with the name of your video (without extension)
+    video_name = "yanoos"  # Replace with the name of your video (without extension)
 
     # # Extract motion data from video
     extract_motion_data(video_name)

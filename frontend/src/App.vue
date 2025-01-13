@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <div class="content" :style="{ height: result ? '55%' : '40%' }">
+    <div class="content" 
+         :style="{ height: result ? auto : auto }"
+    >
       <h1>Sign Language Video Translator</h1>
       <video-upload @video-uploaded="handleVideoUploaded" />
       <translation-result :result="result" v-if="result"/>
@@ -27,14 +29,6 @@ export default {
     handleVideoUploaded(result) {
       this.result = result;
     }
-
-    // ------MOCK-------
-    // handleVideoUploaded() {
-    //   // Simulate a translation result after video is uploaded
-    //   setTimeout(() => {
-    //     this.result = "Translated text of the sign language here."; // Mock translation result
-    //   }, 10); // Simulate a delay for translation processing
-    // }
   }
 };
 </script>
@@ -62,8 +56,7 @@ export default {
 h1 {
   font-size: 3em;
   color: #8f0330;
-  margin-bottom: 60px;
-  margin-top: 10px;
+  margin-top: -30px;
 }
 
 h2 {
@@ -92,15 +85,17 @@ button:disabled {
   cursor: not-allowed;
 }
 
+
+
 .content {
   background-color: rgba(255, 255, 255, 0.8); /* White background with 70% transparency */
-  padding: 60px;
+  padding: 80px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   width: 70%; /* Adjust width as needed */
-  height: 40%;
+  height: auto; /* Use auto height */
   max-width: 2000px; /* Ensure it's not too wide */
-  max-height: 1000px;
-  margin-top: 20px;
+  max-height: 60vh; /* Maximum height is 80% of the viewport height */
+  min-height: 280px; /* Minimum height for smaller screens */
   transition: height 0.3s ease-in-out; /* Smooth height transition */
   
 }
