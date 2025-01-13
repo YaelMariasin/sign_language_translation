@@ -20,7 +20,7 @@ from generate_motion_data import (
     visualize_folder
 )
 
-AMOUNT_OF_VARIATIONS = 10
+AMOUNT_OF_VARIATIONS = 20
 
 # Path settings
 original_folder = "motion_data"
@@ -232,10 +232,10 @@ def write_to_csv(folder, csv_file):
     print(f"Data successfully written to {csv_file}")
 
 
-
+#
 if __name__ == "__main__":
     # Perform augmentations on all files
     augment_all_files()
     # visualize_folder(augmented_folder)
-    write_to_csv(augmented_folder, csv_file_path)
+    # write_to_csv(augmented_folder, csv_file_path)
     print("Augmentations complete! Check the generated_motion_data folder.")

@@ -1,15 +1,14 @@
-import os
-import json
 import numpy as np
-import pandas as pd
 import tensorflow as tf
+import json
+from create_database import read_all
+from conver_json_to_vector import create_feature_vector
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import (
     Dense, LSTM, Dropout, Bidirectional, BatchNormalization,
     Conv1D, Input, GlobalAveragePooling1D
 )
 from tensorflow.keras.regularizers import l2
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import classification_report
@@ -19,72 +18,40 @@ import matplotlib.pyplot as plt
 # Check GPU availability
 print("Available GPUs:", tf.config.list_physical_devices('GPU'))
 
-# Load and preprocess the data
-def load_data(csv_file):
-    """
-    Load and preprocess data from a CSV file with individual feature columns.
-    Each video will have its frames aggregated into a consistent 3D feature array.
-    Args:
-        csv_file (str): Path to the CSV file.
-    Returns:
-        tuple: (features, labels)
-    """
-    data = pd.read_csv(csv_file)
-    print("CSV Columns:", data.columns)
+# Function to load data from the database and create feature vectors
+def load_data_from_db():
+    """Load data from the database and transform JSON content into feature vectors."""
+    vec_lst, label_lst = [], []
+    not_processed_data = read_all()
 
-    # Extract feature column prefixes
-    pose_columns = [col for col in data.columns if col.startswith('pose_')]
-    left_hand_columns = [col for col in data.columns if col.startswith('left_hand_')]
-    right_hand_columns = [col for col in data.columns if col.startswith('right_hand_')]
+    for id, label, category, json_data in not_processed_data:
+        try:
+            # Parse the JSON content (already a string) into a dictionary
+            json_dict = json.loads(json_data)
 
-    features = []
-    labels = []
+            # Create feature vector from the parsed JSON dictionary
+            vectorized_data = create_feature_vector(json_dict)
 
-    # Group data by 'File Name' (each video)
-    video_groups = data.groupby('File Name')
+            vec_lst.append(vectorized_data)  # Append the vectorized data
+            label_lst.append(label)  # Append the label corresponding to the vector
 
-    for video_name, group in video_groups:
-        video_features = []
+        except Exception as e:
+            print(f"Error processing data for ID {id}: {e}")
+            continue  # Skip problematic data and continue processing
 
-        for _, row in group.iterrows():
-            try:
-                # Extract features for each frame and ensure numeric conversion
-                pose_features = np.array(row[pose_columns], dtype='float32')
-                left_hand_features = np.array(row[left_hand_columns], dtype='float32')
-                right_hand_features = np.array(row[right_hand_columns], dtype='float32')
+    return vec_lst, label_lst
 
-                # Concatenate all features for this frame
-                frame_features = np.concatenate([pose_features, left_hand_features, right_hand_features])
-                video_features.append(frame_features)
+# Load and preprocess data
+features, labels = load_data_from_db()
 
-            except ValueError as e:
-                print(f"Skipping malformed row in video {video_name}: {e}")
-                continue
-
-        # Append to the list of features and labels if video_features is valid
-        if video_features:
-            features.append(np.array(video_features, dtype='float32'))
-            labels.append(video_name)
-
-    return features, labels
-
-# Load and aggregate data
-features, labels = load_data("augmented_data_summary.csv")
-
-# Pad sequences to ensure same number of frames per video
-max_frames = 100  # Adjust based on your dataset
-padded_features = pad_sequences(features, padding='post', dtype='float32', maxlen=max_frames)
-
-# Reshape features for scaling
-num_features = padded_features.shape[2]
-padded_features = padded_features.reshape(-1, num_features)
+# Convert features to numpy array
+features = np.array(features, dtype='float32')
 
 # Standardize features
 scaler = StandardScaler()
-scaled_features = scaler.fit_transform(padded_features)
-
-# Reshape back to 3D (video count, max_frames, num_features)
-scaled_features = scaled_features.reshape(-1, max_frames, num_features)
+features = features.reshape(-1, 75)  # Reshape to 2D for scaling
+scaled_features = scaler.fit_transform(features)
+scaled_features = scaled_features.reshape(-1, 200, 75)  # Reshape back to 3D (200 frames, 75 features)
 
 # Encode labels
 label_encoder = LabelEncoder()
@@ -131,7 +98,7 @@ def create_model(input_shape, num_classes):
     return Model(inputs=input_layer, outputs=output_layer)
 
 # Create and compile the model
-model = create_model(input_shape=(max_frames, num_features), num_classes=len(label_encoder.classes_))
+model = create_model(input_shape=(200, 75), num_classes=len(label_encoder.classes_))
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
