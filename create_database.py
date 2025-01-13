@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Database connection configuration
-DATABASE_URL = "postgresql://postgres:RaananP1995@localhost:5432/postgres"
+DATABASE_URL = "postgresql://postgres:lenos4022499@localhost:5432/postgres"
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
@@ -64,6 +64,32 @@ def read_all():
     except Exception as e:
         print(f"Failed to read records: {e}")
         return []
+    
+def get_json_by_id(record_id):
+    """
+    Retrieve the JSON data from the database for the given ID and retrun it.
+    
+    Args:
+        record_id (int): The ID of the record in the database.
+        
+    Returns:
+         motion_data (dict): The JSON data as a Python dictionary.
+    """
+    try:
+        # Query the database for the record with the given ID
+        record = session.query(VideoData).filter_by(id=record_id).first()
+        if not record:
+            raise ValueError(f"No record found with ID {record_id}")
+
+        # Load the JSON data from the record
+        motion_data = json.loads(record.json_output)
+
+        return motion_data
+    
+    except Exception as e:
+        print(f"Failed to retrieve or convert data for ID {record_id}: {e}")
+        return None
+
 
 # Create the database tables
 if __name__ == "__main__":
