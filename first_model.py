@@ -10,7 +10,7 @@ from tensorflow.keras.layers import (
 )
 from tensorflow.keras.regularizers import l2
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report
 from sklearn.utils.class_weight import compute_class_weight
 import matplotlib.pyplot as plt
@@ -26,32 +26,26 @@ def load_data_from_db():
 
     for id, label, category, json_data in not_processed_data:
         try:
-            # Parse the JSON content (already a string) into a dictionary
+            # Parse the JSON content into a dictionary
             json_dict = json.loads(json_data)
 
-            # Create feature vector from the parsed JSON dictionary
+            # Create feature vector of shape (15000, 3)
             vectorized_data = create_feature_vector(json_dict)
 
-            vec_lst.append(vectorized_data)  # Append the vectorized data
-            label_lst.append(label)  # Append the label corresponding to the vector
+            if vectorized_data.shape != (15000, 3):
+                raise ValueError(f"Invalid shape for video {id}: {vectorized_data.shape}")
+
+            vec_lst.append(vectorized_data)
+            label_lst.append(label)
 
         except Exception as e:
             print(f"Error processing data for ID {id}: {e}")
-            continue  # Skip problematic data and continue processing
+            continue
 
-    return vec_lst, label_lst
+    return np.array(vec_lst, dtype='float32'), label_lst
 
 # Load and preprocess data
-features, labels = load_data_from_db()
-
-# Convert features to numpy array
-features = np.array(features, dtype='float32')
-
-# Standardize features
-scaler = StandardScaler()
-features = features.reshape(-1, 75)  # Reshape to 2D for scaling
-scaled_features = scaler.fit_transform(features)
-scaled_features = scaled_features.reshape(-1, 200, 75)  # Reshape back to 3D (200 frames, 75 features)
+features, labels = load_data_from_db()  # features: (num_videos, 15000, 3)
 
 # Encode labels
 label_encoder = LabelEncoder()
@@ -59,7 +53,7 @@ encoded_labels = label_encoder.fit_transform(labels)
 
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(
-    scaled_features, encoded_labels, test_size=0.2, random_state=42, stratify=encoded_labels
+    features, encoded_labels, test_size=0.2, random_state=42, stratify=encoded_labels
 )
 
 # Compute class weights for imbalanced data
@@ -98,7 +92,7 @@ def create_model(input_shape, num_classes):
     return Model(inputs=input_layer, outputs=output_layer)
 
 # Create and compile the model
-model = create_model(input_shape=(200, 75), num_classes=len(label_encoder.classes_))
+model = create_model(input_shape=(15000, 3), num_classes=len(label_encoder.classes_))
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 

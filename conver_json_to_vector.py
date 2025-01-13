@@ -3,7 +3,29 @@ import json
 import numpy as np
 
 
-# Function to extract features from a frame
+def create_feature_vector(frames_data):
+    # Limit frames_data to the first 200 frames if there are more
+    max_frames = 200
+    if len(frames_data) > max_frames:
+        frames_data = frames_data[:max_frames]
+
+    full_vector = []
+
+    for frame in frames_data:
+        full_vector.extend(extract_features(frame))
+
+    # Ensure full_vector is a 2D array with shape (15000, 3)
+    full_vector = np.array(full_vector)
+    total_rows = 15000
+
+    if len(full_vector) < total_rows:
+        # Add rows of zeros to match the desired length
+        padding = total_rows - len(full_vector)
+        zero_padding = np.zeros((padding, 3))
+        full_vector = np.vstack([full_vector, zero_padding])
+
+    return full_vector
+
 def extract_features(frame):
     vector = []
 
@@ -30,18 +52,3 @@ def extract_features(frame):
             vector.extend([np.array([0.0, 0.0, 0.0])] * 21)
 
     return vector
-
-
-# Process all frames
-def create_feature_vector(frames_data):
-    full_vector = []
-
-    for frame in frames_data:
-        full_vector.extend(extract_features(frame))
-
-    return np.array(full_vector)
-
-
-
-
-
