@@ -71,8 +71,8 @@ def extract_motion_data(video_name, folder_name=video_folder):
 
             # Show the frame
             # cv2.imshow('Sign Language Video', frame)  # uncomment to visulise the original video
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
     # Release resources
     cap.release()
@@ -102,7 +102,7 @@ def visualize_motion_data(video_name):
     canvas_size = (720, 1280, 3)  # Height, Width, Channels
 
     for frame_data in motion_data:
-        canvas = numpy.ones(canvas_size, dtype=numpy.uint8) * 255  # White background
+        canvas = np.ones(canvas_size, dtype=np.uint8) * 255  # White background
 
         # Draw pose landmarks
         if frame_data["pose"]:
@@ -146,7 +146,7 @@ def visualize_as_stick_figure(video_name):
     ]
 
     for frame_data in motion_data:
-        canvas = numpy.ones(canvas_size, dtype=numpy.uint8) * 255  # White background
+        canvas = np.ones(canvas_size, dtype=np.uint8) * 255  # White background
 
         # Draw pose landmarks and connections
         if frame_data["pose"]:
@@ -187,7 +187,7 @@ def save_visualization_as_video(video_name):
     out = cv2.VideoWriter(output_path, fourcc, fps, (canvas_size[1], canvas_size[0]))
 
     for frame_data in motion_data:
-        canvas = numpy.ones(canvas_size, dtype=numpy.uint8) * 255  # White background
+        canvas = np.ones(canvas_size, dtype=np.uint8) * 255  # White background
 
         # Draw pose landmarks
         if frame_data["pose"]:
