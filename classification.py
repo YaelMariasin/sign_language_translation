@@ -76,10 +76,10 @@ if __name__ == "__main__":
 
             json_content = read_json_file(f"{folder_path}/jsons/{file_name}.json")
             # Replace with your model file path
-            model_filename = 'models/3d_rnn_cnn_on_85_vpw.keras'
+            model_filename = 'models/3d_rnn_cnn_on_39_vpw.keras'
 
             # Define a label mapping (example)
-            label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn_85_vpw.pkl')
+            label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn_39_vpw.pkl')
 
 
             # Get the classification result

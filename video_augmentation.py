@@ -20,7 +20,7 @@ from generate_motion_data import (
     visualize_folder
 )
 
-AMOUNT_OF_VARIATIONS = 50
+AMOUNT_OF_VARIATIONS = 23
 
 # Path settings
 original_folder = "motion_data"
