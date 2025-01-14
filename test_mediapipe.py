@@ -83,9 +83,9 @@ def extract_motion_data(video_name, folder_name=video_folder):
 
     return trimmed_data
 
-def motion_data_to_json(frames_data, video_name):
+def motion_data_to_json(frames_data, video_name, folder_name="motion_data"):
     # Save motion data to a file
-    json_path = "motion_data/" + video_name + ".json"
+    json_path = folder_name + "/" + video_name + ".json"
     with open(json_path, "w") as f:
         json.dump(frames_data, f)
 

@@ -6,6 +6,7 @@ import json
 import pickle
 from conver_json_to_vector import create_feature_vector
 import json
+from test_mediapipe import extract_motion_data, motion_data_to_json
 
 def read_json_file(file_path):
     """
@@ -65,16 +66,22 @@ def classify_json_file(model_filename ,json_content, label_mapping):
 
 # Example usage
 if __name__ == "__main__":
-    folder_path = 'motion_data'
+    # folder_path = 'motion_data'
+    folder_path = 'test_videos'
     for file_name in os.listdir(folder_path):
-        json_content = read_json_file(f"{folder_path}/{file_name}")
-        # Replace with your model file path
-        model_filename = 'models/3d_rnn_cnn_on_50_vpw.keras'
+        if file_name.split('.')[1] == "mp4":
+            file_name = file_name.split('.')[0]
+            trim_data = extract_motion_data(file_name, folder_name = folder_path + "/")
+            motion_data_to_json(trim_data, file_name, folder_name = folder_path + "/")
 
-        # Define a label mapping (example)
-        label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn.pkl')
+            json_content = read_json_file(f"{folder_path}/{file_name}.json")
+            # Replace with your model file path
+            model_filename = 'models/3d_rnn_cnn_on_50_vpw.keras'
+
+            # Define a label mapping (example)
+            label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn.pkl')
 
 
-        # Get the classification result
-        predicted_label = classify_json_file(model_filename,json_content,label_encoder)
-        print(f"Real label: {file_name}, Predicted Label: {predicted_label}")
+            # Get the classification result
+            predicted_label = classify_json_file(model_filename,json_content,label_encoder)
+            print(f"Real label: {file_name}, Predicted Label: {predicted_label}")
