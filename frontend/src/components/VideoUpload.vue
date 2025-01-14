@@ -1,9 +1,10 @@
 <template>
   <div class="video-upload">
-    <h2>Upload Your Sign Language Video for Translation</h2>
+    <h2>Upload Your Sign Language Video</h2>
     <input 
       type="file"
       accept="video/*" 
+      class="file-input"
       @change="onFileChange"
     >
     <button 
@@ -18,7 +19,7 @@
   <script>
   export default {
     name: 'VideoUpload',
-    emits: ['video-uploaded'],
+    emits: ['video-uploaded', 'reset-translation'],
     data() {
       return {
         videoFile: null,
@@ -27,6 +28,7 @@
     methods: {
       onFileChange(event) {
         this.videoFile = event.target.files[0];
+        this.$emit('reset-translation'); // Emit event to reset the translation
       },
       async uploadVideo() {
         if (!this.videoFile) return;
@@ -62,6 +64,21 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
+  .file-input::file-selector-button{
+    font-family: 'Montserrat', sans-serif;
+  }
+
+    
+  .video-upload input {
+    display: block;
+    margin: 20px 0;
+    padding: 10px;
+    width: 96.5%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Montserrat', sans-serif;
+  }
+
   @media (max-width: 600px) {
     .video-upload input {
         padding: 8px;
@@ -73,20 +90,35 @@
         padding: 10px;
     }
   }
-  
-  .video-upload input {
-    display: block;
-    margin: 20px 0;
-    padding: 10px;
-    width: 96.5%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
+
   
   .video-upload button {
     width: 100%;
     padding: 12px;
     font-size: 1.1em;
+    background-color: #ff6b6b; /* Use a vibrant color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    /* font-size: 16px; */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
+
+  .video-upload button:hover {
+    background-color: #ff4a4a;
+    transform: scale(1.02);
+  }
+
+  .video-upload button:disabled {
+    background-color: #d3d3d3; /* Light gray to indicate disabled state */
+    color: #a0a0a0; /* Dimmed text color for clarity */
+    cursor: not-allowed;
+    transform: none; /* Remove hover effects */
+    box-shadow: none; /* Remove any shadow to make it look flat */
+    opacity: 0.7; /* Slightly reduce opacity for a disabled effect */
+  }
+
   </style>
   

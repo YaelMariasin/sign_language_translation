@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from test_mediapipe import extract_motion_data
 from conver_json_to_vector import create_feature_vector
+from classification import load_label_mapping,classify_json_file
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -37,21 +38,36 @@ def upload_file():
         print(f"Video uploaded: {file_path}")
 
         data_frames = extract_motion_data("backend/"+ UPLOAD_FOLDER + "/" + filename)
-        vector = create_feature_vector(data_frames)
 
         # Here, you would process the video with your ML model
-        result = translate_sign_language(vector)
+        result = translate_sign_language(data_frames)
 
-    
         return jsonify({"translation": result}), 200
     else:
         return jsonify({"error": "Invalid file format"}), 400
 
 # Example function to simulate translation
-def translate_sign_language(vector):
-    # Logic to send the video to your ML model
-    # Placeholder result for now
-    return "Translated text for the uploaded sign language video."
+def translate_sign_language(data_frames):
+    try:
+        # Define paths to model and label encoder
+        model_filename = os.path.join(os.path.dirname(__file__), '../models/3d_rnn_cnn_on_50_vpw.keras')
+        label_encoder_path = os.path.join(os.path.dirname(__file__), '../models/label_encoder_3d_rnn_cnn.pkl')
+
+
+        # Load the label encoder
+        label_encoder = load_label_mapping(label_encoder_path)
+
+        # Get the classification result
+        predicted_label = classify_json_file(model_filename, data_frames, label_encoder)
+
+        print("label: "  + predicted_label)
+
+        return predicted_label
+
+    except FileNotFoundError as e:
+        return f"File not found: {e}"
+    except Exception as e:
+        return f"An error occurred: {e}"
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
