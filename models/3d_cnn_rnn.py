@@ -53,7 +53,8 @@ def load_data_from_db():
         except Exception as e:
             print(f"Error processing data for ID {id}: {e}")
             continue
-
+    for i in range(len(label_lst)):
+        label_lst[i] = label_lst[i].split("_")[0]
     return np.array(vec_lst, dtype='float32'), label_lst
 
 def compute_weights(y_train):
@@ -143,7 +144,7 @@ def main():
     label_encoder = LabelEncoder()
     encoded_labels = label_encoder.fit_transform(labels)
 
-    save_label_mapping(label_encoder, 'label_encoder_3d_rnn_cnn.pkl')
+    save_label_mapping(label_encoder, f'label_encoder_3d_rnn_cnn_{ len(labels) // len(set(labels))}_vpw.pkl')
 
 
     # Train-test split

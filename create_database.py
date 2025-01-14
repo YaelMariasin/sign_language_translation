@@ -29,7 +29,7 @@ def extract_label(file_name):
 def add_json_file(file_path, category):
     try:
         file_name = os.path.splitext(os.path.basename(file_path))[0]
-        label = extract_label(file_name)
+        label = file_name
         with open(file_path, 'r', encoding='utf-8') as f:
             json_output = json.load(f)
         new_video = VideoData(

@@ -66,20 +66,20 @@ def classify_json_file(model_filename ,json_content, label_mapping):
 
 # Example usage
 if __name__ == "__main__":
-    # folder_path = 'motion_data'
+    # folder_path = 'sign_language_videos'
     folder_path = 'test_videos'
-    for file_name in os.listdir(folder_path):
+    for file_name in os.listdir(folder_path + "/videos"):
         if file_name.split('.')[1] == "mp4":
             file_name = file_name.split('.')[0]
-            trim_data = extract_motion_data(file_name, folder_name = folder_path + "/")
-            motion_data_to_json(trim_data, file_name, folder_name = folder_path + "/")
+            trim_data = extract_motion_data(file_name, folder_name = folder_path + "/videos/")
+            motion_data_to_json(trim_data, file_name, folder_name = folder_path + "/jsons/")
 
-            json_content = read_json_file(f"{folder_path}/{file_name}.json")
+            json_content = read_json_file(f"{folder_path}/jsons/{file_name}.json")
             # Replace with your model file path
-            model_filename = 'models/3d_rnn_cnn_on_50_vpw.keras'
+            model_filename = 'models/3d_rnn_cnn_on_85_vpw.keras'
 
             # Define a label mapping (example)
-            label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn.pkl')
+            label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn_85_vpw.pkl')
 
 
             # Get the classification result

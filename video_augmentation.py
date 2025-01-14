@@ -55,7 +55,7 @@ def apply_random_augmentations(data):
     }
 
     # Randomly select and apply 3-6 augmentations
-    selected_augmentations = random.sample(list(augmentations.items()), random.randint(4, 8))
+    selected_augmentations = random.sample(list(augmentations.items()), random.randint(6, 9))
     applied_augmentations = []
     for name, augment in selected_augmentations:
         data = augment(data)
