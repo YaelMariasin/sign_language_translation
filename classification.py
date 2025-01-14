@@ -1,43 +1,80 @@
 import numpy as np
+import os
+from tensorflow.keras.models import load_model
 from sklearn.preprocessing import LabelEncoder
+import json
+import pickle
+from conver_json_to_vector import create_feature_vector
+import json
 
-
-def classify_sign(numpy_object, model, label_encoder):
+def read_json_file(file_path):
     """
-    Classify a single ISL sign using the trained model.
+    Reads a JSON file and returns its content.
 
     Args:
-        numpy_object (numpy.ndarray): A numpy array of shape (15000, 3) representing the input features.
-        model (tensorflow.keras.Model): The trained Keras model for classification.
-        label_encoder (LabelEncoder): The label encoder used to encode the class labels.
+        file_path (str): The path to the JSON file.
 
     Returns:
-        str: The predicted class label.
+        dict: The parsed JSON content.
     """
-    # Ensure the input shape is correct
-    if numpy_object.shape != (15000, 3):
-        raise ValueError(f"Invalid input shape: expected (15000, 3), got {numpy_object.shape}")
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            json_content = json.load(file)
+        return json_content
+    except FileNotFoundError:
+        print(f"Error: File not found at {file_path}")
+    except json.JSONDecodeError as e:
+        print(f"Error: Failed to decode JSON. {e}")
+    return None
 
-    # Add batch dimension to the input (expected shape: (1, 15000, 3))
-    numpy_object = np.expand_dims(numpy_object, axis=0)
 
-    # Predict the class probabilities
-    predictions = model.predict(numpy_object)
+def load_label_mapping(file_path):
+    """Load the label encoder from a file."""
+    with open(file_path, 'rb') as f:
+        label_encoder = pickle.load(f)
+    print(f"Label encoder loaded from {file_path}")
+    return list(label_encoder.classes_)
 
-    # Get the class with the highest probability
-    predicted_class_index = np.argmax(predictions, axis=-1)[0]
+def classify_json_file(model_filename ,json_content, label_mapping):
+    """
+    Classifies a dummy matrix using a pre-trained model.
 
-    # Decode the class index to the label
-    predicted_label = label_encoder.inverse_transform([predicted_class_index])[0]
+    Args:
+        model_filename (str): Path to the saved model.
+        input_shape (tuple): Shape of the input data (e.g., (50, 75, 3)).
+        label_mapping (dict): Mapping of class indices to labels.
+
+    Returns:
+        str: Predicted class label.
+    """
+    # Load the saved model
+    model = load_model(model_filename)
+
+    input_matrix = create_feature_vector(json_content)
+    # Assuming `input_data` is your input of shape (32, 75, 3)
+    reshaped_data = input_matrix.reshape((1, 50, 75, 3))  # Add batch and time steps dimensions
+
+    # Pass reshaped_data to the model
+    predictions = model.predict(reshaped_data)
+    predicted_class = np.argmax(predictions, axis=-1)[0]  # Get the predicted class index
+
+    # Map the predicted index to the corresponding label
+    predicted_label = label_mapping[predicted_class]
 
     return predicted_label
 
-test_sample = np.random.rand(15000, 3).astype('float32')  # Replace with your actual data
-model_path = 'sign_language_video_model.h5'
+# Example usage
+if __name__ == "__main__":
+    folder_path = 'motion_data'
+    for file_name in os.listdir(folder_path):
+        json_content = read_json_file(f"{folder_path}/{file_name}")
+        # Replace with your model file path
+        model_filename = 'models/3d_rnn_cnn_on_50_vpw.keras'
 
-labels = ["brother", "sister", 'cell', 'phone', 'welcome', 'word']
-label_encoder = LabelEncoder()
-encoded_labels = label_encoder.fit_transform(labels)
+        # Define a label mapping (example)
+        label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn.pkl')
 
-predicted_label = classify_sign(test_sample, model_path, label_encoder)
-print(f"Predicted Label: {predicted_label}")
+
+        # Get the classification result
+        predicted_label = classify_json_file(model_filename,json_content,label_encoder)
+        print(f"Real label: {file_name}, Predicted Label: {predicted_label}")

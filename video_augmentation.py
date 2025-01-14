@@ -20,7 +20,7 @@ from generate_motion_data import (
     visualize_folder
 )
 
-AMOUNT_OF_VARIATIONS = 100
+AMOUNT_OF_VARIATIONS = 50
 
 # Path settings
 original_folder = "motion_data"
@@ -55,7 +55,7 @@ def apply_random_augmentations(data):
     }
 
     # Randomly select and apply 3-6 augmentations
-    selected_augmentations = random.sample(list(augmentations.items()), random.randint(3, 6))
+    selected_augmentations = random.sample(list(augmentations.items()), random.randint(4, 8))
     applied_augmentations = []
     for name, augment in selected_augmentations:
         data = augment(data)

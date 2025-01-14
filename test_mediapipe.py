@@ -1,4 +1,5 @@
 import cv2
+import os
 import mediapipe as mp
 import json
 import numpy as np
@@ -69,7 +70,7 @@ def extract_motion_data(video_name, folder_name=video_folder):
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
             # Show the frame
-            cv2.imshow('Sign Language Video', frame)
+            # cv2.imshow('Sign Language Video', frame)  # uncomment to visulise the original video
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -236,16 +237,30 @@ def save_visualization_as_video(video_name):
 
 
 
+# if __name__ == "__main__":
+#     for video in ["brother"  # Replace with the name of your video (without extension)
+#
+#     # # Extract motion data from video
+#     extract_motion_data(video_name)
+#     #
+#     # # Visualize motion data
+#     visualize_motion_data(video_name)
+#     #
+#     # # Save visualization as video
+#     # save_visualization_as_video(video_name)
+#
+#     # visualize_as_stick_figure(video_name)
+
+
 if __name__ == "__main__":
-    video_name = "brother"  # Replace with the name of your video (without extension)
+    GIVEN_FOLDER = "sign_language_videos"
+    # Iterate through all files in the given folder
+    for file_name in os.listdir(GIVEN_FOLDER):
+        # Check if the file is a video file (e.g., .mp4, .avi, etc.)
+        if file_name.endswith(('.mp4', '.avi', '.mov', '.mkv')):  # Adjust extensions as needed
+            # Remove the file extension to get the video name
+            video_name = os.path.splitext(file_name)[0]
 
-    # # Extract motion data from video
-    extract_motion_data(video_name)
-    #
-    # # Visualize motion data
-    visualize_motion_data(video_name)
-    #
-    # # Save visualization as video
-    # save_visualization_as_video(video_name)
-
-    # visualize_as_stick_figure(video_name)
+            # Extract motion data from the video
+            trim_data = extract_motion_data(video_name)
+            motion_data_to_json(trim_data, video_name)

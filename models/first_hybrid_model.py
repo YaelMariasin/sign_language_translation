@@ -1,5 +1,7 @@
 import numpy as np
 import tensorflow as tf
+from collections import Counter
+
 import json
 from create_database import read_all
 from conver_json_to_vector import create_feature_vector
@@ -15,8 +17,7 @@ from sklearn.metrics import classification_report
 from sklearn.utils.class_weight import compute_class_weight
 import matplotlib.pyplot as plt
 
-# Check GPU availability
-print("Available GPUs:", tf.config.list_physical_devices('GPU'))
+
 
 # Function to load data from the database and create feature vectors
 def load_data_from_db():
@@ -55,7 +56,6 @@ encoded_labels = label_encoder.fit_transform(labels)
 # X_train, X_test, y_train, y_test = train_test_split(
 #     features, encoded_labels, test_size=0.2, random_state=42, stratify=encoded_labels
 # )
-from collections import Counter
 
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(

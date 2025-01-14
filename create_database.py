@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Database connection configuration
-DATABASE_URL = "postgresql://postgres:lenos4022499@localhost:5432/postgres"
+DATABASE_URL = "postgresql://postgres:RaananP1995@localhost:5432/postgres"
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
