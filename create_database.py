@@ -1,8 +1,9 @@
 import os
 import json
-from sqlalchemy import create_engine, Column, Integer, String, Text
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
+from datetime import datetime 
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -32,6 +33,15 @@ class VideoData(Base):
 Session = sessionmaker(bind=engine)
 session = Session()
 
+# Define the VideoUpload table
+class VideoUpload(Base):
+    __tablename__ = 'video_uploads'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)  # Auto-increment primary key
+    timestamp = Column(DateTime, default=datetime.utcnow)  # Timestamp for when the video was uploaded
+    label = Column(String(255), nullable=True)  # Label for the video (can be empty initially)
+    json_output = Column(Text, nullable=True)  # JSON output from MediaPipe
+
 # Function to extract label up to the first underscore
 def extract_label(file_name):
     return file_name.split('_')[0]
@@ -54,6 +64,20 @@ def add_json_file(file_path, category):
     except Exception as e:
         session.rollback()
         print(f"Failed to add JSON file '{file_path}': {e}")
+
+# Function to add a video upload entry
+def add_video_upload(json_data, label=None):
+    try:
+        new_upload = VideoUpload(
+            label=label,
+            json_output=json.dumps(json_data)  # Store JSON as a string
+        )
+        session.add(new_upload)
+        session.commit()
+        print(f"Added video upload to the database with ID: {new_upload.id}")
+    except Exception as e:
+        session.rollback()
+        print(f"Failed to add video upload: {e}")
 
 # Function to add all JSON files from a folder to the database
 def add_json_files_from_folder(folder_path, category):
@@ -112,4 +136,4 @@ if __name__ == "__main__":
     # add_json_file("motion_data/brother.json", "first_model")
 
     # Add all JSON files from a folder
-    add_json_files_from_folder("generated_motion_data", "first_model")
+    # add_json_files_from_folder("generated_motion_data", "first_model")

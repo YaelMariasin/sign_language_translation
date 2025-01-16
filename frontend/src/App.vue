@@ -5,11 +5,18 @@
       <video-upload 
         @video-uploaded="handleVideoUploaded"
         @reset-translation="resetTranslation" 
+        @start-translating="startTranslating"
       />
       <div 
-        class="result-container" 
-        :class="{ 'show': showResult }"
+        v-if="isTranslating" 
+        class="translating-message"
+      >
+        Translating...
+      </div>
+      <div 
         ref="resultContainer"
+        class="result-container" 
+        :class="{ 'show': showResult }" 
       >
         <transition name="fade">
           <translation-result 
@@ -36,16 +43,22 @@ export default {
     return {
       result: null,
       showResult: false, // Control visibility of the translation result
+      isTranslating: false // Controls the "Translating..." message
     };
   },
   methods: {
     handleVideoUploaded(result) {
       this.result = result;
+      this.isTranslating = false; // Hide "Translating..." when done
       this.showResult = true;
     },
     resetTranslation() {
       this.result = null; // Clear the translation result
       this.showResult = false; // Hide the result component
+    },
+    startTranslating() {
+      this.isTranslating = true; // Show "Translating..." message
+      this.showResult = false; // Hide previous result while translating
     }
   }
 };
@@ -58,12 +71,13 @@ export default {
   font-family: 'Montserrat', sans-serif;
   color: #333;
   position: relative; /* Required for pseudo-element positioning */
-  height: 100vh;
+  min-height: 100vh; /* Allow dynamic height changes */
   margin: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: min-height 0.6s ease-in-out; /* Smooth transition for height */
 }
 
 /* Add a dark overlay with blur */
@@ -74,14 +88,16 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  min-height: 100vh; /* Ensure the body grows with content */
   background: 
     linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
     url('@/assets/sign1.jpg') left center no-repeat, 
     url('@/assets/sign2.jpg') center center no-repeat, 
     url('@/assets/sign3.jpg') right center no-repeat;
   background-size: 33.33vw 100vh;
-  filter: blur(2px); /* Apply blur to the background images */
+  /* filter: blur(2px);  */
   z-index: -1; /* Ensure it stays behind the content */
+  background-attachment: fixed;
 }
 
 .video-upload{
@@ -131,10 +147,10 @@ button:disabled {
   border-radius: 8px;
   padding: 85px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  width: 70%; /* Adjust width as needed */
+  width: 60%; /* Adjust width as needed */
   height: auto; 
   max-width: 2000px; /* Ensure it's not too wide */
-  max-height: 60vh; /* Maximum height is 80% of the viewport height */
+  /* max-height: 60vh;  */
   min-height: 280px; /* Minimum height for smaller screens */
   transition: height 0.3s ease-in-out; /* Smooth height transition */
   margin: 20px auto; /* Center content and add spacing around it */
@@ -148,6 +164,7 @@ button:disabled {
 }
 
 .result-container.show {
+  margin-bottom: -50px;
   max-height: 500px; /* Set this to a value larger than the maximum expected height */
 }
 
@@ -159,6 +176,15 @@ button:disabled {
 
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+/* Add styles for the "Translating..." message */
+.translating-message {
+  font-size: 1.5em;
+  /* color: #d82c7c; */
+  color: #0056b3;
+  margin-top: 40px;
+  animation: fadeIn 1s infinite alternate; /* Fade in animation for a dynamic look */
 }
 
 /* Animations */
