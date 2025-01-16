@@ -9,8 +9,8 @@ from werkzeug.utils import secure_filename
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from test_mediapipe import extract_motion_data
-from conver_json_to_vector import create_feature_vector
-from classification import load_label_mapping,classify_json_file
+from classification import load_label_mapping,classify_json_file,read_json_file
+from create_database import add_video_upload
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -33,11 +33,18 @@ def upload_file():
     file = request.files['video']
     if file and allowed_file(file.filename):
         filename = secure_filename(f"{uuid.uuid4()}_{file.filename}")
+
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
         print(f"Video uploaded: {file_path}")
 
-        data_frames = extract_motion_data("backend/"+ UPLOAD_FOLDER + "/" + filename)
+
+        if filename.split('.')[1] == "mp4":
+            filename = filename.split('.')[0]
+
+
+        data_frames = extract_motion_data(filename, os.path.abspath(app.config['UPLOAD_FOLDER'])+'/')
+        add_video_upload(data_frames)
 
         # Here, you would process the video with your ML model
         result = translate_sign_language(data_frames)
@@ -50,8 +57,8 @@ def upload_file():
 def translate_sign_language(data_frames):
     try:
         # Define paths to model and label encoder
-        model_filename = os.path.join(os.path.dirname(__file__), '../models/3d_rnn_cnn_on_50_vpw.keras')
-        label_encoder_path = os.path.join(os.path.dirname(__file__), '../models/label_encoder_3d_rnn_cnn.pkl')
+        model_filename = os.path.join(os.path.dirname(__file__), '../models/3d_rnn_cnn_on_23_vpw.keras')
+        label_encoder_path = os.path.join(os.path.dirname(__file__), '../models/label_encoder_3d_rnn_cnn_23_vpw.pkl')
 
 
         # Load the label encoder
@@ -60,7 +67,6 @@ def translate_sign_language(data_frames):
         # Get the classification result
         predicted_label = classify_json_file(model_filename, data_frames, label_encoder)
 
-        print("label: "  + predicted_label)
 
         return predicted_label
 

@@ -7,6 +7,18 @@
       class="file-input"
       @change="onFileChange"
     >
+    <!-- Video preview -->
+    <div 
+      v-if="videoPreview" 
+      class="video-preview"
+    >
+      <video 
+        :src="videoPreview" 
+        controls 
+        class="uploaded-video"
+      />
+    </div>
+
     <button 
       :disabled="!videoFile" 
       @click="uploadVideo" 
@@ -19,19 +31,26 @@
   <script>
   export default {
     name: 'VideoUpload',
-    emits: ['video-uploaded', 'reset-translation'],
+    emits: ['video-uploaded', 'reset-translation', 'start-translating'],
     data() {
       return {
         videoFile: null,
+        videoPreview: null, // For storing video preview URL
       };
     },
     methods: {
       onFileChange(event) {
-        this.videoFile = event.target.files[0];
-        this.$emit('reset-translation'); // Emit event to reset the translation
+        const file = event.target.files[0];
+        if (file) {
+        this.videoFile = file;
+        this.videoPreview = URL.createObjectURL(file); // Generate a preview URL for the video
+        this.$emit('reset-translation'); // Reset the translation result
+        }
       },
       async uploadVideo() {
         if (!this.videoFile) return;
+
+        this.$emit('start-translating'); // Emit event to show "Translating..."
   
         const formData = new FormData();
         formData.append('video', this.videoFile);
@@ -56,7 +75,7 @@
   
   <style scoped>
   .video-upload {
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
@@ -67,6 +86,18 @@
   .file-input::file-selector-button{
     font-family: 'Montserrat', sans-serif;
   }
+  .video-preview {
+  margin-top: 20px;
+}
+
+.uploaded-video {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+ }
 
     
   .video-upload input {

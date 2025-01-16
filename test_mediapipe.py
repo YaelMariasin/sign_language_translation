@@ -20,7 +20,11 @@ def extract_motion_data(video_name, folder_name=video_folder):
 
     # Load video
     video_path = folder_name + video_name + ".mp4"
+
+
     cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        raise FileNotFoundError(f"Cannot open video file: {video_path}")
 
     # Output file for motion data
     output_data = []
@@ -59,6 +63,7 @@ def extract_motion_data(video_name, folder_name=video_folder):
                         {"x": lm.x, "y": lm.y, "z": lm.z} for lm in hand_landmarks.landmark
                     ])
 
+
             # Append to output data
             output_data.append(frame_data)
 
@@ -80,12 +85,12 @@ def extract_motion_data(video_name, folder_name=video_folder):
     
     # Trim dead time using the modified detect_motion_and_trim
     trimmed_data = detect_motion_and_trim(output_data)
-
+    
     return trimmed_data
 
 def motion_data_to_json(frames_data, video_name, folder_name="motion_data"):
     # Save motion data to a file
-    json_path = folder_name + "/" + video_name + ".json"
+    json_path = folder_name + video_name + ".json"
     with open(json_path, "w") as f:
         json.dump(frames_data, f)
 
