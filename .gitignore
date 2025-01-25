@@ -1,0 +1,55 @@
+# Ignore virtual environment
+.venv/
+
+# Ignore environment variables file
+.env
+
+# Ignore PyCharm IDE files
+.idea/
+
+# Ignore compiled Python files
+*.pyc
+_pycache_/
+
+# Ignore logs
+*.log
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore folders
+test_vid/*
+generated_motion_data/*
+pose_format_augmentation/
+test_videos/jsons/
+
+# Node.js dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+**/dist/
+
+# Local environment files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# macOS system files
+.DS_Store
