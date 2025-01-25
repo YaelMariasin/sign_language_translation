@@ -57,8 +57,8 @@ def upload_file():
 def translate_sign_language(data_frames):
     try:
         # Define paths to model and label encoder
-        model_filename = os.path.join(os.path.dirname(__file__), '../models/3d_rnn_cnn_on_23_vpw.keras')
-        label_encoder_path = os.path.join(os.path.dirname(__file__), '../models/label_encoder_3d_rnn_cnn_23_vpw.pkl')
+        model_filename = os.path.join(os.path.dirname(__file__), '../models/3d_rnn_cnn_on_15_vpw.keras')
+        label_encoder_path = os.path.join(os.path.dirname(__file__), '../models/label_encoder_3d_rnn_cnn_15_vpw.pkl')
 
 
         # Load the label encoder
