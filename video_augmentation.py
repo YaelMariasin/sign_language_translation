@@ -63,7 +63,7 @@ def apply_random_augmentations(data):
 
     return data, applied_augmentations
 
-def augment_all_files():
+def augment_all_files(amount_of_variations=AMOUNT_OF_VARIATIONS):
     """
     Augment all JSON files in the motion_data folder with random combinations of augmentations.
     """
@@ -73,7 +73,7 @@ def augment_all_files():
             data = load_json(file_name)
 
             # Generate multiple augmented versions
-            for i in range(AMOUNT_OF_VARIATIONS):  # Generate 10 variations per file
+            for i in range(amount_of_variations):  # Generate 10 variations per file
                 augmented_data, applied_augmentations = apply_random_augmentations(copy.deepcopy(data))
                 # Create a descriptive file name
                 augmentations_str = "_".join(applied_augmentations)

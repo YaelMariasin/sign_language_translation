@@ -3,7 +3,8 @@ import json
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
-from datetime import datetime 
+from datetime import datetime
+from sqlalchemy.sql import text
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -126,8 +127,23 @@ def get_json_by_id(record_id):
         return None
 
 
+def drop_video_data_table():
+    """
+    Drop the video_data table if it exists.
+    """
+    if engine is None:
+        raise RuntimeError("Database is not initialized. Call create_DB() first.")
+
+    with engine.begin() as connection:  # Use `begin` to handle transactions automatically
+        try:
+            connection.execute(text("DROP TABLE IF EXISTS video_data CASCADE"))  # Add CASCADE to drop dependencies
+            print("video_data table dropped successfully!")
+        except Exception as e:
+            print(f"Failed to drop video_data table: {e}")
+
+
 # Create the database tables
-if __name__ == "__main__":
+def create_db():
     Base.metadata.create_all(engine)
     print("Database and tables created successfully!")
 
@@ -137,3 +153,6 @@ if __name__ == "__main__":
 
     # Add all JSON files from a folder
     # add_json_files_from_folder("generated_motion_data", "first_model")
+
+if __name__ == "__main__":
+    create_db()

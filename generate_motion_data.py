@@ -35,7 +35,12 @@ def save_json(data, file_name):
         data (dict): The JSON data to save.
         file_name (str): The name of the output JSON file.
     """
-    with open(os.path.join(folder_with_new_jsons, file_name), "w") as file:
+
+    # Construct the full path for the file
+    file_path = os.path.join(folder_with_new_jsons, file_name)
+
+    # Save the JSON data
+    with open(file_path, "w") as file:
         json.dump(data, file, indent=4)
 
 

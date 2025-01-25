@@ -152,7 +152,7 @@ def generate_augmented_json_files(input_folder, number_of_versions):
                 augmented_pose = random_augment_pose(pose)
 
                 # Save as MediaPipe JSON
-                output_file = os.path.join(output_folder, f"{base_name}_{index}.json")
+                output_file = os.path.join(output_folder, f"{base_name}_{index}_pose-format.json")
                 pose_to_mediapipe_json(augmented_pose, output_file)
 
                 print(f"Saved: {output_file}")
@@ -160,7 +160,7 @@ def generate_augmented_json_files(input_folder, number_of_versions):
 # Example usage
 if __name__ == "__main__":
     input_folder = "test_videos/yanoos_json"  # Replace with your input folder path
-    number_of_versions = 100  # Number of augmented versions to generate per file
+    number_of_versions = 10  # Number of augmented versions to generate per file
     generate_augmented_json_files(input_folder, number_of_versions)
     # p = mediapipe_json_to_pose_file("motion_data/sister.json")
     #

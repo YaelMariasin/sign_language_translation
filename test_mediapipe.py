@@ -84,11 +84,11 @@ def extract_motion_data(video_name, folder_name=video_folder):
     cv2.destroyAllWindows()
     
     # Trim dead time using the modified detect_motion_and_trim
-    trimmed_data = detect_motion_and_trim(output_data)
+    # trimmed_data = detect_motion_and_trim(output_data)
     
-    return trimmed_data
+    return output_data
 
-def motion_data_to_json(frames_data, video_name, folder_name="motion_data"):
+def motion_data_to_json(frames_data, video_name, folder_name="motion_data/"):
     # Save motion data to a file
     json_path = folder_name + video_name + ".json"
     with open(json_path, "w") as f:
@@ -257,7 +257,7 @@ def save_visualization_as_video(video_name):
 #     # visualize_as_stick_figure(video_name)
 
 
-if __name__ == "__main__":
+def create_original_motion_data():
     GIVEN_FOLDER = "sign_language_videos"
     # Iterate through all files in the given folder
     for file_name in os.listdir(GIVEN_FOLDER):
@@ -269,3 +269,7 @@ if __name__ == "__main__":
             # Extract motion data from the video
             trim_data = extract_motion_data(video_name)
             motion_data_to_json(trim_data, video_name)
+
+
+if __name__ == "__main__":
+    create_original_motion_data()

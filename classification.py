@@ -64,31 +64,42 @@ def classify_json_file(model_filename ,json_content, label_mapping):
 
     return predicted_label
 
-# Example usage
-if __name__ == "__main__":
-    test_original = True
-
+def classify(pkl_file_name, model_filename, test_original = True):
+    results_list = []
     if test_original:
-        folder_path_for_videos = 'sign_language_videos/'
-        folder_path_for_jsons = 'motion_data/'
+        folder_path_for_videos = 'sign_language_videos'
+        folder_path_for_jsons = 'motion_data'
     else:
-        folder_path_for_videos = 'test_videos/videos/'
-        folder_path_for_jsons = 'test_videos/jsons/'
+        folder_path_for_videos = 'test_videos/videos'
+        folder_path_for_jsons = 'test_videos/jsons'
     for file_name in os.listdir(folder_path_for_videos):
         if file_name.split('.')[1] == "mp4":
             file_name = file_name.split('.')[0]
 
-            trim_data = extract_motion_data(file_name, folder_name = folder_path_for_videos)
-            motion_data_to_json(trim_data, file_name, folder_name = folder_path_for_jsons)
+            trim_data = extract_motion_data(file_name, folder_name = folder_path_for_videos + '/')
+            motion_data_to_json(trim_data, file_name, folder_name = folder_path_for_jsons + '/')
 
-            json_content = read_json_file(f"{folder_path_for_jsons}{file_name}.json")
+            json_content = read_json_file(f"{folder_path_for_jsons}/{file_name}.json")
             # Replace with your model file path
-            model_filename = 'models/3d_rnn_cnn_on_23_vpw.keras'
+            # model_filename = 'models/3d_rnn_cnn_on_23_vpw.keras'
 
             # Define a label mapping (example)
-            label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn_23_vpw.pkl')
+            # label_encoder = load_label_mapping('models/label_encoder_3d_rnn_cnn_23_vpw.pkl')
+            if not pkl_file_name.endswith('.pkl'):
+                pkl_file_name = pkl_file_name + '.pkl'
 
+            label_encoder = load_label_mapping(pkl_file_name)
+
+            if not model_filename.endswith('.keras'):
+                model_filename = model_filename + '.keras'
 
             # Get the classification result
             predicted_label = classify_json_file(model_filename,json_content,label_encoder)
             print(f"Real label: {file_name}, Predicted Label: {predicted_label}")
+            # results_list.append(f"Real label: {file_name}, Predicted Label: {predicted_label}")
+            results_list.append((file_name, predicted_label))
+
+    return results_list
+
+if __name__ == "__main__":
+    classify('models/label_encoder_3d_rnn_cnn_23_vpw.pkl', 'models/3d_rnn_cnn_on_23_vpw.keras')
