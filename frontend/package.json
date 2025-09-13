@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@vuelidate/core": "^2.0.3",
-    "axios": "^1.8.4",
+    "axios": "^1.12.1",
     "bootstrap": "^5.3.5",
     "bootstrap-vue-3": "^0.5.1",
     "core-js": "^3.8.3",
