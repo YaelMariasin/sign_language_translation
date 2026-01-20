@@ -1,6 +1,6 @@
 # Translating Israeli Sign Language to Hebrew Text
 
-![Project Poster](./08c9c0c7-eba9-411c-8d08-39bf7f0b35e1.png)
+![Project Data](https://www.notion.so/Capstone-Project-Translating-Israeli-Sign-Language-to-Hebrew-Text-247637a8e778807fbdcaf92171150e65)
 
 This project focuses on translating **Israeli Sign Language (ISL)** from video input into **written Hebrew text**.
 
